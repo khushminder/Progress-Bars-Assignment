@@ -1,5 +1,5 @@
 var app = angular.module("barsDemoApp", []);
-app.controller("barsDemoCtrl", function($scope,$http) {
+app.controller("barsDemoCtrl", function($scope,$http,$compile) {
 
 	//endpoint call
 	$http.get('http://pb-api.herokuapp.com/bars').
@@ -17,9 +17,18 @@ app.controller("barsDemoCtrl", function($scope,$http) {
 		var dropDown = document.createElement("select");
 		//set values and lable to buttons
 		angular.forEach(buttons,function(btn,indx){
-			var button = document.getElementById("btn"+(indx+1));
+			var button = document.createElement("button");
+			var buttonId = "btn"+(indx+1);
+			button.setAttribute("id", buttonId);
 			button.setAttribute("value", btn);
+			button.setAttribute("class", "btn");
+			button.setAttribute("ng-click", "changeBarsWidth("+buttonId+")");
 			button.innerHTML=btn;
+			
+			//compile button element using $compile, so that ng-click works
+			$compile(button)($scope);
+			var buttonDiv = document.getElementById("buttonDiv");
+			buttonDiv.appendChild(button);
 		});
 
 		//create main view
