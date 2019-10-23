@@ -1,16 +1,19 @@
 var app = angular.module("barsDemoApp", []);
 app.controller("barsDemoCtrl", function($scope,$http,$compile) {
 
-	//endpoint call
-	$http.get('http://pb-api.herokuapp.com/bars').
-	then(function(response) {
-		$scope.responseData = response.data;
-		$scope.buttons = $scope.responseData.buttons;
-		$scope.bars = $scope.responseData.bars;
-		$scope.maxLimit = $scope.responseData.limit;
+	
+	$scope.init = function(){
+		//endpoint call
+		$http.get('http://pb-api.herokuapp.com/bars').
+		then(function(response) {
+			$scope.responseData = response.data;
+			$scope.buttons = $scope.responseData.buttons;
+			$scope.bars = $scope.responseData.bars;
+			$scope.maxLimit = $scope.responseData.limit;
 
-		$scope.createView($scope.buttons,$scope.bars);
-	});
+			$scope.createView($scope.buttons,$scope.bars);
+		});
+	}
 
 	//creates dom elements for the view
 	$scope.createView = function(buttons,bars){
@@ -22,11 +25,12 @@ app.controller("barsDemoCtrl", function($scope,$http,$compile) {
 			button.setAttribute("id", buttonId);
 			button.setAttribute("value", btn);
 			button.setAttribute("class", "btn");
-			button.setAttribute("ng-click", "changeBarsWidth("+buttonId+")");
+			button.setAttribute("ng-click", "changeBarsWidth('"+buttonId+"')");
 			button.innerHTML=btn;
 			
 			//compile button element using $compile, so that ng-click works
 			$compile(button)($scope);
+			//button.onclick = $scope.changeBarsWidth(buttonId);
 			var buttonDiv = document.getElementById("buttonDiv");
 			buttonDiv.appendChild(button);
 		});
@@ -63,51 +67,53 @@ app.controller("barsDemoCtrl", function($scope,$http,$compile) {
 		var but = document.getElementById("buttonDiv");
 		but.appendChild(dropDown);
 		dropDown.setAttribute("id", "dropDownId");
-
-		
-		//this function get called on the click of button
-		$scope.changeBarsWidth = function(divId){
-			var element = document.getElementById(divId);
-
-			var v = parseInt(document.getElementById("dropDownId").value);
-			var a = document.getElementById("label"+v).innerHTML;
-
-			var elementValue = parseInt(element.value) + parseInt(a);
-
-			// if value equal to 100 ,change color to blue
-			if (elementValue == 100)
-			{
-				document.getElementById("bar"+v).style.backgroundColor = "blue";
-				document.getElementById("bar"+v).style.width = "100%";
-				document.getElementById("label"+v).innerHTML = elementValue + "%";                   
-			}
-			//if value is greater than 100 and less OR equal to maxlimit ,change color to red
-			else if(elementValue > 100 && elementValue <= $scope.maxLimit){  
-				document.getElementById("bar"+v).style.backgroundColor = "red";
-				document.getElementById("bar"+v).style.width = "100%";
-				document.getElementById("label"+v).innerHTML = elementValue + "%"; 
-			}
-			//if value is greater than maxlimit ,change color to red
-			else if(elementValue >= $scope.maxLimit){
-				document.getElementById("bar"+v).style.backgroundColor = "red";
-				document.getElementById("bar"+v).style.width = "100%";
-				document.getElementById("label"+v).innerHTML = $scope.maxLimit + "%"; 
-			}
-			//if value is less than 100 and greater than 0 ,change color to green
-			else if (elementValue <= 100 && elementValue > 0)
-			{
-				document.getElementById("bar"+v).style.backgroundColor = "lightgreen";
-				document.getElementById("bar"+v).style.width = elementValue + "%";
-				document.getElementById("label"+v).innerHTML = elementValue + "%";
-			} 
-			// if value is less than or equal to 0 than set value and width of bar equal to 0
-			else if (elementValue <= 0)
-			{
-				document.getElementById("bar"+v).style.width = "0%";
-				document.getElementById("label"+v).innerHTML = "0%";
-
-			} 
-		}	
 	}
+	
+	//this function get called on the click of button
+	$scope.changeBarsWidth = function(divId){
+		var element = document.getElementById(divId);
+
+		var v = parseInt(document.getElementById("dropDownId").value);
+		var a = document.getElementById("label"+v).innerHTML;
+
+		var elementValue = parseInt(element.value) + parseInt(a);
+
+		// if value equal to 100 ,change color to blue
+		if (elementValue == 100)
+		{
+			document.getElementById("bar"+v).style.backgroundColor = "blue";
+			document.getElementById("bar"+v).style.width = "100%";
+			document.getElementById("label"+v).innerHTML = elementValue + "%";                   
+		}
+		//if value is greater than 100 and less OR equal to maxlimit ,change color to red
+		else if(elementValue > 100 && elementValue <= $scope.maxLimit){  
+			document.getElementById("bar"+v).style.backgroundColor = "red";
+			document.getElementById("bar"+v).style.width = "100%";
+			document.getElementById("label"+v).innerHTML = elementValue + "%"; 
+		}
+		//if value is greater than maxlimit ,change color to red
+		else if(elementValue >= $scope.maxLimit){
+			document.getElementById("bar"+v).style.backgroundColor = "red";
+			document.getElementById("bar"+v).style.width = "100%";
+			document.getElementById("label"+v).innerHTML = $scope.maxLimit + "%"; 
+		}
+		//if value is less than 100 and greater than 0 ,change color to green
+		else if (elementValue <= 100 && elementValue > 0)
+		{
+			document.getElementById("bar"+v).style.backgroundColor = "lightgreen";
+			document.getElementById("bar"+v).style.width = elementValue + "%";
+			document.getElementById("label"+v).innerHTML = elementValue + "%";
+		} 
+		// if value is less than or equal to 0 than set value and width of bar equal to 0
+		else if (elementValue <= 0)
+		{
+			document.getElementById("bar"+v).style.width = "0%";
+			document.getElementById("label"+v).innerHTML = "0%";
+
+		} 
+	}	
+	
+	//call to init function
+	$scope.init();
 });
 
